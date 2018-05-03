@@ -90,9 +90,17 @@
   font-size: 14px;
 }
 .nav__item{
-  font-size: 16px;
+  font-size: 16px;}
 
-}
+  .recent-news{
+    font-size: 16px;
+  }
+  .hero{
+    height: 400px;
+  }
+  .snippet__title{
+    width: 
+  }
 }
 
 @media screen and (min-width: 850px) {
