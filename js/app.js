@@ -143,7 +143,7 @@ function cardMatch() {
 function endGame() {
   modal.style.display = "block";
   var h = document.createTextNode(
-    "You made " + (moves - 1) + " moves in " + timer.innerHTML + " and earned a star rating of" + stars + " !"
+    "You made " + (moves - 1) + " moves in " + timer.innerHTML + " and earned a star rating of " + stars + " !"
   );
   content.appendChild(h);
   stopTimer();
