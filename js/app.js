@@ -3,11 +3,7 @@ let deck = document.querySelector(".deck");
 let card = document.querySelectorAll(".card");
 let cards = Array.from(card); // Array which hold all cards
 let openedCards = []; // Array that holds open cards
-let open = document.getElementsByClassName("open");
-let match = document.getElementsByClassName("match");
-let show = document.getElementsByClassName("show");
 let matchArray = [];
-let matchedCards = 0;
 
 let modal = document.querySelector(".modal");
 let close = document.getElementById("close");
@@ -17,6 +13,7 @@ let moves = 0;
 
 //  Timer
 let timer = document.getElementById("timer");
+
 let min = 0;
 let sec = 0;
 let time;
@@ -27,11 +24,10 @@ let starOne = document.querySelector(".starOne");
 
 let starTwo = document.querySelector(".starTwo");
 
-let starThree = document.querySelector(".starThree");
-
 let stars;
 
 let content = document.querySelector(".content");
+
 
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -50,6 +46,7 @@ function shuffle(cards) {
   return cards;
 }
 
+document.onload = startGame();
 //Start the game
 function startGame() {
   //Reset the timer and moves
@@ -61,15 +58,17 @@ function startGame() {
   //Reset the stars
   starOne.style.display = "inline";
   starTwo.style.display = "inline";
-  starThree.style.display = "inline";
 
+  //Reset the matchArray
+  matchArray =[];
+  
   //Shuffle deck
-  let shuffledCards = shuffle(cards);
+  shuffle(cards);
   for (let i = 0; i < card.length; i++) {
     deck.innerHTML = "";
     for (let card of cards) {
       deck.appendChild(card);
-      card.classList.remove("open", "match", "show");
+      card.classList.remove("open", "match", "show", "disabled");
     }
   }
 }
@@ -82,33 +81,32 @@ for (let card of cards) {
 //Flip each card
 function flip(event) {
   if (openedCards.length < 2) {
-    event.target.classList.add("open", "show", "disabled");
+    if (!event.target.classList.contains("open", "show", "disabled")) {
+      event.target.classList.add("open", "show", "disabled");
+    } else {
+      return false;
+    };
+    //Count Moves and stars
+
+    document.querySelector(".moves").innerHTML = moves;
+    moves++;
+    if (moves == 1) {
+      startTimer();
+    }
+    if (moves >= 29) {
+      starOne.style.display = "none";
+      stars = 2;
+    }
+    if (moves >= 36) {
+      starTwo.style.display = "none";
+      stars = 1;
+    }
     openedCards.push(event.target);
   }
 
   if (openedCards.length === 2) {
     deck.removeEventListener("click", flip);
     selectedCards();
-  }
-
-  //Count Moves and stars
-
-  document.querySelector(".moves").innerHTML = moves;
-  moves++;
-  if (moves == 1) {
-    startTimer();
-  }
-  if (moves >= 25) {
-    starOne.style.display = "none";
-    stars = 2;
-  }
-  if (moves >= 35) {
-    starTwo.style.display = "none";
-    stars = 1;
-  }
-  if (moves >= 45) {
-    starThree.style.display = "none";
-    stars = 0;
   }
 }
 
@@ -142,7 +140,7 @@ function cardMatch() {
 function endGame() {
   modal.style.display = "block";
   var h = document.createTextNode(
-      "You made " + (moves - 1) + " moves in " + timer.innerHTML + " and earned " + stars + " stars!"
+    "You made " + (moves - 1) + " moves in " + timer.innerHTML + " and earned a star rating of" + stars + " !"
   );
   content.appendChild(h);
   stopTimer();
@@ -178,6 +176,5 @@ function stopTimer() {
 //Reset by restart button
 restart.onclick = function() {
   stopTimer();
-
   startGame();
 };
