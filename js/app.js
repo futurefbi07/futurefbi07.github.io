@@ -63,6 +63,7 @@ function startGame() {
 
   //Reset the matchArray
   matchArray = [];
+  openedCards= [];
 
   //Shuffle deck
   shuffle(cards);
@@ -83,15 +84,21 @@ for (let card of cards) {
 //Flip each card
 function flip(event) {
   if (openedCards.length < 2) {
+    //Push opened cards to openedCards Array
+    openedCards.push(event.target);
     if (!event.target.classList.contains("open", "show", "disabled")) {
       event.target.classList.add("open", "show", "disabled");
     } else {
       return;
     };
+}
+
+  if (openedCards.length === 2) {
+    selectedCards();
     //Count Moves and stars
-    document.querySelector(".moves").innerHTML = moves;
     moves++;
-    if (moves == 1) {
+    document.querySelector(".moves").innerHTML = moves;
+    if (moves === 1) {
       startTimer();
     }
     if (moves <= 29){
@@ -105,16 +112,8 @@ function flip(event) {
       starTwo.style.display = "none";
       stars = 1;
     }
-    //Push opened cards to openedCards Array
-    openedCards.push(event.target);
-  }
-
-  if (openedCards.length === 2) {
-    deck.removeEventListener("click", flip);
-    selectedCards();
   }
 }
-
 //Check matching and unmatching cards
 function selectedCards() {
   setTimeout(function() {
@@ -147,7 +146,7 @@ function endGame() {
   stopTimer();
 //Play Again Message
   h = document.createTextNode(
-    "You made " + (moves - 1) + " moves in " + timer.innerHTML + " and earned a star rating of " + stars + " !"
+    "You made " + (moves) + " moves in " + timer.innerHTML + " and earned a star rating of " + stars + " !"
   );
   content.appendChild(h);
 
