@@ -61,7 +61,7 @@ function startGame() {
 
   //Reset the matchArray
   matchArray =[];
-  
+
   //Shuffle deck
   shuffle(cards);
   for (let i = 0; i < card.length; i++) {
@@ -93,7 +93,10 @@ function flip(event) {
     if (moves == 1) {
       startTimer();
     }
-    if (moves >= 29) {
+    if (moves <= 29){
+      stars = 3;
+    }
+    if (moves > 29) {
       starOne.style.display = "none";
       stars = 2;
     }
