@@ -71,7 +71,7 @@ function startGame() {
     deck.innerHTML = "";
     for (let card of cards) {
       deck.appendChild(card);
-      card.classList.remove("open", "match", "show");
+      card.classList.remove("open", "match", "show", "disabled");
     }
   }
 }
@@ -124,8 +124,8 @@ function selectedCards() {
       matchArray.push(openedCards[1]);
       cardMatch();
     } else {
-      openedCards[0].classList.remove("open", "show");
-      openedCards[1].classList.remove("open", "show");
+      openedCards[0].classList.remove("open", "show", "disabled");
+      openedCards[1].classList.remove("open", "show", "disabled");
     }
     openedCards = [];
   }, 600);
