@@ -1,188 +1,129 @@
-// Cards and deck variables
-let deck = document.querySelector(".deck");
-let card = document.querySelectorAll(".card");
-let cards = Array.from(card); // Array which hold all cards
-let openedCards = []; // Array that holds open cards
-let matchArray = [];
+// Enemies our player must avoid
+var Enemy = function(x,y, speed) {
+    // Variables applied to each of our instances go here,
+    // we've provided one for you to get started
+    this.x = x;
+    this.y = y + 55;
+    this.step = 101;
+    this.boundary = this.step * 5;
+    //Set speed of the enemy
+    this.speed = speed;
+    // The image/sprite for our enemies, this uses
+    // a helper we've provided to easily load images
+    this.sprite = 'images/enemy-bug.png';
 
-let modal = document.querySelector(".modal");
-let close = document.getElementById("close");
-let play = document.querySelector(".play");
-
-let moves = 0;
-
-//  Timer
-let timer = document.getElementById("timer");
-
-let min = 0;
-let sec = 0;
-let time;
-
-let restart = document.querySelector(".restart");
-
-let starOne = document.querySelector(".starOne");
-
-let starTwo = document.querySelector(".starTwo");
-
-let stars;
-
-let content = document.querySelector(".content");
-
-let h;
-
-// Shuffle function from http://stackoverflow.com/a/2450976
-
-function shuffle(cards) {
-  var currentIndex = cards.length,
-    temporaryValue,
-    randomIndex;
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-    temporaryValue = cards[currentIndex];
-    cards[currentIndex] = cards[randomIndex];
-    cards[randomIndex] = temporaryValue;
-  }
-  return cards;
-}
-
-document.onload = startGame();
-//Start the game
-function startGame() {
-
-  //Reset the timer and moves
-  min = 0;
-  sec = 0;
-  timer.innerHTML = min + ":" + sec;
-  moves = 0;
-  document.querySelector(".moves").innerHTML = moves;
-
-  //Reset the stars
-  starOne.style.display = "inline";
-  starTwo.style.display = "inline";
-
-  //Reset the matchArray
-  matchArray = [];
-  openedCards= [];
-
-  //Shuffle deck
-  shuffle(cards);
-  for (let i = 0; i < card.length; i++) {
-    deck.innerHTML = "";
-    for (let card of cards) {
-      deck.appendChild(card);
-      card.classList.remove("open", "match", "show", "disabled");
-    }
-  }
-}
-
-//Loop through cards and append to deck
-for (let card of cards) {
-  card.addEventListener("click", flip);
-}
-
-//Flip each card
-function flip(event) {
-  if (openedCards.length < 2) {
-    //Push opened cards to openedCards Array
-    openedCards.push(event.target);
-    if (!event.target.classList.contains("open", "show", "disabled")) {
-      event.target.classList.add("open", "show", "disabled");
-    } else {
-      return;
-    };
-}
-
-  if (openedCards.length === 2) {
-    selectedCards();
-    //Count Moves and stars
-    moves++;
-    document.querySelector(".moves").innerHTML = moves;
-    if (moves === 1) {
-      startTimer();
-    }
-    if (moves <= 29){
-      stars = 3;
-    }
-    if (moves > 29) {
-      starOne.style.display = "none";
-      stars = 2;
-    }
-    if (moves >= 36) {
-      starTwo.style.display = "none";
-      stars = 1;
-    }
-  }
-}
-//Check matching and unmatching cards
-function selectedCards() {
-  setTimeout(function() {
-    if (openedCards[0].type === openedCards[1].type) {
-      openedCards[0].classList.add("match");
-      openedCards[1].classList.add("match");
-      matchArray.push(openedCards[0]);
-      matchArray.push(openedCards[1]);
-      cardMatch();
-    } else {
-      openedCards[0].classList.remove("open", "show", "disabled");
-      openedCards[1].classList.remove("open", "show", "disabled");
-    }
-    openedCards = [];
-  }, 600);
-}
-
-//Check to see if all cards match
-function cardMatch() {
-  if (matchArray.length === cards.length) {
-    endGame();
-  } else {
-    return false;
-  }
-}
-
-//End game when all cards match
-function endGame() {
-  modal.style.display = "block";
-  stopTimer();
-//Play Again Message
-  h = document.createTextNode(
-    "You made " + (moves) + " moves in " + timer.innerHTML + " and earned a star rating of " + stars + " !"
-  );
-  content.appendChild(h);
-
-//Restart game from modal and play again
-  play.onclick = function() {
-    modal.style.display = "none";
-    startGame();
-//Reset Modal Play Again Message
-  content.removeChild(h);
-  };
-//Close modal
-  close.onclick = function() {
-    modal.style.display = "none";
-  };
-}
-
-//Start time
-function startTimer() {
-  time = setInterval(function() {
-    if (++sec === 60) {
-      sec = 0;
-      if (++min === 60) min = 0;
-    }
-    timer.innerHTML = min + ":" + sec;
-  }, 1000);
-}
-
-//Stop time
-function stopTimer() {
-  clearInterval(time);
-}
-
-//Reset by restart button
-restart.onclick = function() {
-  stopTimer();
-  startGame();
-//Reset Modal Play Again Message
-  content.removeChild(h);
 };
+
+// Update the enemy's position, required method for game
+// Parameter: dt, a time delta between ticks
+Enemy.prototype.update = function(dt) {
+    if(this.x < this.boundary){
+      // move forward
+      // calcularte speed of the enemy
+      // by multiplying any movement by the dt parameter
+      // which will give the enemy a constant speed across the gameboar
+      this.x = this.x + this.speed * dt;
+    }
+    else {
+      // move to start position
+      this.x = -1;
+    }
+};
+
+// Draw the enemy on the screen, required method for game
+Enemy.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+// Now write your own player class
+// This class requires an update(), render() and
+// a handleInput() method.
+class Player {
+  constructor(){
+    this.x = 202;
+    this.y = 387;
+    this.finish = false
+    this.sprite = 'images/char-boy.png';
+}
+
+  update() {
+    //Did the player get hit
+      for(let enemy of allEnemies) {
+
+        if(this.y === enemy.y && (enemy.x + enemy.step/2 > this.x && enemy.x < this.x + 202/2)) {
+          this.reset();
+        }
+
+        //Did the player reach the last tile
+        if(this.y === -28){
+          this.finish = true;
+        }
+      }
+  }
+  reset() {
+    this.x = 202;
+    this.y = 387;
+  }
+  render() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+// Update the players's position, required method for game
+
+// Parameter: dt, a time delta between ticks
+
+/*@param {string} input -- Direction to Travel According to Input*/
+
+handleInput(input){
+  switch(input){
+      case 'left':
+        if(this.x > 0){
+          this.x = this.x - 101;
+        }
+          break;
+      case 'right':
+        if(this.x < 400){
+          this.x = this.x + 101;
+        }
+          break;
+      case 'up':
+        if(this.y > 0){
+          this.y = this.y - 83;
+        }
+          break;
+      case 'down':
+        if(this.y < 332){
+          this.y = this.y + 83;
+        }
+          break;
+  }
+}
+}
+
+// Now instantiate your objects.
+
+// Place all enemy objects in an array called allEnemies
+const allEnemies =[];
+
+// Place the enemy object in a variable
+
+const bug1 = new Enemy(-101, 0, 310);
+const bug2 = new Enemy((-101 * 3), (83 * 2), 400);
+const bug3 = new Enemy((-101), (83 * 3), 230);
+const bug4 = new Enemy((-101 * 4), (83 * 3), 230);
+
+allEnemies.push(bug1, bug2, bug3, bug4);
+// Place the player object in a variable called player
+const player = new Player();
+
+// This listens for key presses and sends the keys to your
+// Player.handleInput() method. You don't need to modify this.
+document.addEventListener('keyup', function(e) {
+    var allowedKeys = {
+        37: 'left',
+        38: 'up',
+        39: 'right',
+        40: 'down'
+    };
+
+    player.handleInput(allowedKeys[e.keyCode]);
+});
